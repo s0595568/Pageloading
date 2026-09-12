@@ -7,6 +7,8 @@
 node_modules/
 dist/
 
+.env
+
 # pageload
 pageloading/testresults
 pageloading/.ipynb_checkpoints

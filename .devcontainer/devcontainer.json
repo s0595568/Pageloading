@@ -1,0 +1,11 @@
+{
+  "name": "PageLoading Dev Container",
+  "dockerComposeFile": "../docker-compose.yml",
+  "service": "pageload",
+  "secrets": {
+    "MARIADB_HOST": { "description": "Hostname of the MariaDB database used by PageLoad.py" },
+    "MARIADB_USER": { "description": "Username for the MariaDB database" },
+    "MARIADB_PASSWORD": { "description": "Password for the MariaDB database" },
+    "PAGESPEED_API_KEY": { "description": "Google PageSpeed Insights API key" }
+  }
+}
