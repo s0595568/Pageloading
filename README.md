@@ -66,7 +66,7 @@ Please get your credentials from DevOps team
 
 - Python 3 (latest version)
 - juypter notebook (for editing) 
-- DBviewer (please ask DevOps team (Mercy or Adrian) for credentials and other things to connect BI-02)
+- DBviewer (please ask DevOps team for credentials and other things to connect BI-02)
 - SSH key (please ask DevOps team or Adrian)
 
 # CI/CD setup:
