@@ -2,6 +2,7 @@
   "name": "PageLoading Dev Container",
   "dockerComposeFile": "../docker-compose.yml",
   "service": "pageload",
+    "workspaceFolder": "/workspaces/pageloading-main",
   "secrets": {
     "MARIADB_HOST": { "description": "Hostname of the MariaDB database used by PageLoad.py" },
     "MARIADB_USER": { "description": "Username for the MariaDB database" },

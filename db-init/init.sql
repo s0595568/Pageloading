@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS pagespeed (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    url VARCHAR(2048),
+    env VARCHAR(50),
+    device VARCHAR(20),
+    timestamp DATETIME,
+    overallperformancescore FLOAT,
+    fcp INT,
+    fid INT,
+    lcp INT,
+    cls FLOAT,
+    fcp_score VARCHAR(20),
+    fid_score VARCHAR(20),
+    lcp_score VARCHAR(20),
+    cls_score VARCHAR(20),
+    inp INT,
+    ttfb FLOAT,
+    tbt FLOAT,
+    si FLOAT
+);

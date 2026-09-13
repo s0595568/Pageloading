@@ -1,0 +1,43 @@
+services:
+  mariadb:
+    image: mariadb:11
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MYSQL_DATABASE: QA
+      MYSQL_USER: ${MARIADB_USER}
+      MYSQL_PASSWORD: ${MARIADB_PASSWORD}
+    volumes:
+      - ./db-init/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 10  
+
+  bi02-test:
+    build:
+      context: .
+      dockerfile: Dockerfile.bi02test
+    volumes:
+      - ./ssh_keys/id_rsa.pub:/keys/id_rsa.pub:ro
+    depends_on:
+      - mariadb
+
+
+  ssh-tunnel-sidecar:
+    build:
+      context: .
+      dockerfile: Dockerfile.tunnel
+    environment:
+      - MARIADB_USER=${MARIADB_USER}
+    volumes:
+      - ./ssh_keys/id_rsa:/id_rsa:ro
+    depends_on:
+      - bi02-test
+
+  pageload:
+    build: .
+    depends_on:
+      - ssh-tunnel-sidecar
+    env_file:
+      - .env

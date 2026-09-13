@@ -9,6 +9,9 @@ dist/
 
 .env
 
+
+ssh_keys/
+
 # pageload
 pageloading/testresults
 pageloading/.ipynb_checkpoints

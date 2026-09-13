@@ -17,11 +17,24 @@ from datetime import date
 import mysql.connector
 from mysql.connector import Error
 
-with open('config.json') as json_file:
-    dbConfig = json.load(json_file)
+#with open('config.json') as json_file:
+#    dbConfig = json.load(json_file)
+
+#strategies = ['desktop', 'mobile']
+#apikey = dbConfig['apikey']
+import os
+
+dbConfig = {
+    'host': os.environ['MARIADB_HOST'],
+    'database': os.environ.get('MARIADB_DATABASE', 'QA'),
+    'user': os.environ['MARIADB_USER'],
+    'port': os.environ.get('MARIADB_PORT', '3307'),
+    'password': os.environ['MARIADB_PASSWORD'],
+}
 
 strategies = ['desktop', 'mobile']
-apikey = dbConfig['apikey']
+apikey = '&key=' + os.environ['PAGESPEED_API_KEY']
+
 today = str(date.today())
 
 from datetime import datetime
@@ -55,6 +68,7 @@ def savetoFile(lhtest, summary, url, timestampStr):
 
 
 def savetoDB(summary):
+    connection = None
     try:
         connection = mysql.connector.connect(host=dbConfig['host'],
                                              database=dbConfig['database'],
@@ -89,7 +103,7 @@ def savetoDB(summary):
     except Error as e:
         print("Error while connecting to MySQL", e)
     finally:
-        if connection.is_connected():
+        if connection is not None and connection.is_connected():
             cursor.close()
             connection.close()
             print("sql connection is closed")
@@ -112,13 +126,15 @@ with open('urllist.json') as json_file:
                 x = f'https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url={url}&strategy={strategy}{apikey}'
                 response = requests.get(x)
                 lhtest = response.json()
-                loadingExperience = lhtest["loadingExperience"]["metrics"]
-                audits = lhtest["lighthouseResult"]["audits"]
-                
-                if lhtest.get('id',False):
+                print(f"DEBUG - API response for {url}: {lhtest}")
+
+                loadingExperience = lhtest.get("loadingExperience", {}).get("metrics", {})
+                audits = lhtest.get("lighthouseResult", {}).get("audits", {})
+
+                if lhtest.get('id', False):
                     summary = {
                         "url": lhtest["id"],
-                        "OverallPerformanceScore":lhtest["lighthouseResult"]["categories"]["performance"]["score"] * 100,
+                        "OverallPerformanceScore": lhtest["lighthouseResult"]["categories"]["performance"]["score"] * 100,
                         "fcp": loadingExperience["FIRST_CONTENTFUL_PAINT_MS"]["percentile"] if "FIRST_CONTENTFUL_PAINT_MS" in loadingExperience else None,
                         "fid": loadingExperience["FIRST_INPUT_DELAY_MS"]["percentile"] if "FIRST_INPUT_DELAY_MS" in loadingExperience else None,
                         "lcp": loadingExperience["LARGEST_CONTENTFUL_PAINT_MS"]["percentile"] if "LARGEST_CONTENTFUL_PAINT_MS" in loadingExperience else None,
@@ -135,8 +151,10 @@ with open('urllist.json') as json_file:
                         "strategy": strategy,
                         "env": key
                     }
-                savetoDB(summary)
-                savetoFile(lhtest, summary, url, timestampStr)
+                    savetoDB(summary)
+                    savetoFile(lhtest, summary, url, timestampStr)
+                else:
+                    print(f"Skipped {url}: no 'id' in response — {lhtest}")
 
 
 # In[ ]:
