@@ -126,7 +126,6 @@ with open('urllist.json') as json_file:
                 x = f'https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url={url}&strategy={strategy}{apikey}'
                 response = requests.get(x)
                 lhtest = response.json()
-                print(f"DEBUG - API response for {url}: {lhtest}")
 
                 loadingExperience = lhtest.get("loadingExperience", {}).get("metrics", {})
                 audits = lhtest.get("lighthouseResult", {}).get("audits", {})
